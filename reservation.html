@@ -129,21 +129,23 @@
         r.date === data.date && r.heure === data.heure
       ).length;
       if (count >= 2) {
-        document.getElementById('reservation-message').innerHTML =
-          "<span style='color:red;font-weight:bold;'>Ce créneau est déjà complet (2 réservations max) !</span>";
+        const messageDiv = document.getElementById('reservation-message');
+        messageDiv.className = 'error';
+        messageDiv.innerHTML = "Ce créneau est déjà complet (2 réservations max) !";
         return;
       }
       reservations.push(data);
       reservations.sort((a, b) => new Date(b.date) - new Date(a.date));
       localStorage.setItem('reservations', JSON.stringify(reservations));
-      document.getElementById('reservation-message').innerHTML =
-        `<span style="color:rgb(255,187,0);font-weight:bold;">
-          Merci pour votre réservation !<br>
+      const messageDiv = document.getElementById('reservation-message');
+      messageDiv.className = 'success';
+      messageDiv.innerHTML =
+        `Merci pour votre réservation !<br>
           Votre rendez-vous est confirmé pour le <u>${data.date}</u> à <u>${data.heure}</u>.<br>
-          Nous avons hâte de vous accueillir chez BarberShop Pro !
-        </span>`;
+          Nous avons hâte de vous accueillir chez BarberShop Pro !`;
       form.reset();
     };
   </script>
 </body>
 </html>
+
