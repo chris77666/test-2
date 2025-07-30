@@ -1,0 +1,284 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background-color: black;
+}
+
+.header-bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 50px 0 0;
+}
+
+.titre {
+  color: rgb(255, 187, 0);
+  margin-left: 6cm;
+}
+
+.titre h1 {
+  font-size: 2.5em;
+  margin: 0;
+}
+
+nav.navigation {
+  display: flex;
+  gap: 20px;
+  padding: 0;
+  justify-content: flex-end;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-size: 24px;
+  transition: color 0.3s;
+}
+
+.nav-link:active,
+.nav-link.active,
+.nav-link:hover {
+  color: rgb(255, 187, 0);
+  text-decoration: underline;
+}
+
+.rectangle-noir {
+  width: 12cm;
+  height: 0.5cm;
+  background: black;
+  margin: 20px auto;
+  border-radius: 4px;
+}
+
+.services-fond {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #232323 0%, #181818 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.services-section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 40px auto 0 auto;
+  text-align: center;
+}
+
+.services-title,
+.services-section .highlight,
+.services-desc {
+  color: rgb(255, 187, 0);
+}
+
+.services-section h2 {
+  font-size: 3em;
+  font-weight: bold;
+  margin-bottom: 0.2em;
+}
+
+.services-desc {
+  font-size: 1.3em;
+  margin-bottom: 2em;
+}
+
+.services-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: center;
+}
+
+.service-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  overflow: hidden;
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 30px;
+}
+
+.service-img {
+  background: #ccc;
+  background-size: cover;
+  background-position: center;
+  height: 180px;
+  width: 100%;
+}
+
+.service-info {
+  padding: 24px 24px 16px 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.service-info h3 {
+  font-size: 1.4em;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+  color: #222;
+}
+
+.service-info p {
+  color: #555;
+  font-size: 1.1em;
+  margin-bottom: 1.2em;
+}
+
+.service-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.service-price {
+  color: rgb(255, 187, 0);
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.btn-reserver {
+  display: inline-block;
+  background: rgb(255, 187, 0);
+  color: #222;
+  font-weight: bold;
+  font-size: 1.1em;
+  padding: 10px 28px;
+  border: none;
+  border-radius: 8px;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  margin-left: 10px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-reserver:hover {
+  background: #ffd700;
+  color: #000;
+}
+
+/* RESPONSIVE DESIGN - MOBILE */
+@media screen and (max-width: 768px) {
+  .header-bar {
+    flex-direction: column;
+    align-items: center;
+    padding: 15px 20px;
+    gap: 15px;
+  }
+
+  .titre {
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .titre h1 {
+    font-size: 1.8em;
+  }
+
+  nav.navigation {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  .nav-link {
+    font-size: 18px;
+    padding: 8px 12px;
+    border-radius: 5px;
+  }
+
+  .rectangle-noir {
+    width: 80%;
+    height: 0.3cm;
+  }
+
+  .services-section {
+    margin: 20px auto;
+    padding: 0 20px;
+  }
+
+  .services-section h2 {
+    font-size: 2.2em;
+  }
+
+  .services-desc {
+    font-size: 1.1em;
+    margin-bottom: 1.5em;
+  }
+
+  .services-grid {
+    gap: 20px;
+  }
+
+  .service-card {
+    width: 100%;
+    max-width: 320px;
+    margin-bottom: 20px;
+  }
+
+  .service-img {
+    height: 160px;
+  }
+
+  .service-info {
+    padding: 20px;
+  }
+
+  .service-bottom {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .btn-reserver {
+    margin-left: 0;
+    text-align: center;
+    padding: 12px 20px;
+    font-size: 1em;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .titre h1 {
+    font-size: 1.5em;
+  }
+
+  .nav-link {
+    font-size: 16px;
+  }
+
+  .services-section h2 {
+    font-size: 1.8em;
+  }
+
+  .services-desc {
+    font-size: 1em;
+  }
+
+  .service-card {
+    max-width: 280px;
+  }
+
+  .service-info h3 {
+    font-size: 1.2em;
+  }
+
+  .service-info p {
+    font-size: 1em;
+  }
+
+  .service-price {
+    font-size: 1.3em;
+  }
+}

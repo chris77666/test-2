@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact - BarberShop Pro</title>
+  <link rel="stylesheet" href="contact.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+<body>
+  <div class="header-bar">
+    <div class="titre">
+      <h1>BarberShop Pro</h1>
+    </div>
+    <div class="rectangle-noir"></div>
+    <nav class="navigation">
+      <a href="index.html" class="nav-link">Accueil</a>
+      <a href="services.html" class="nav-link">Services</a>
+      <a href="reservation.html" class="nav-link">Réservation</a>
+      <a href="contact.html" class="nav-link active">Contact</a>
+      <a href="admin.html" class="nav-link">Admin</a>
+    </nav>
+  </div>
+  <div class="contact-fond">
+    <div class="fond-images"></div>
+    <div class="contact-map-container">
+      <iframe
+        src="https://www.google.com/maps?q=123+Avenue+du+Style,+75000+Paris&output=embed"
+        width="100%" height="360" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+        title="Emplacement BarberShop Pro"></iframe>
+      <a href="https://www.google.com/maps?q=123+Avenue+du+Style,+75000+Paris" target="_blank" class="map-link">
+        Voir sur Google Maps
+      </a>
+    </div>
+    <div class="contact-form-container">
+      <h2 class="contact-title"><span class="highlight">Contactez-nous</span></h2>
+      <p class="contact-desc">Une question, une demande ? Retrouvez nos coordonnées ci-dessous.</p>
+      <div class="contact-info">
+        <p><strong>Téléphone :</strong> 06 12 34 56 78</p>
+        <p><strong>Email :</strong> contact@barbershoppro.fr</p>
+        <p><strong>Adresse :</strong> 123 Avenue du Style, 75000 Paris</p>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Génère 300 images décoratives aléatoires
+    const images = [
+      "barbe.png",
+      "les-ciseaux.png",
+      "rasoir.png",
+      "taille-de-la-barbe.png"
+    ];
+    const fond = document.querySelector('.fond-images');
+    for(let i=0; i<300; i++) {
+      const img = document.createElement('img');
+      img.src = images[Math.floor(Math.random()*images.length)];
+      img.className = "fond-img";
+      img.style.top = Math.random()*95 + "%";
+      img.style.left = Math.random()*95 + "%";
+      img.style.width = (18 + Math.random()*22) + "px";
+      img.style.transform = `rotate(${Math.floor(Math.random()*360)}deg)`;
+      img.style.opacity = 0.10 + Math.random()*0.10;
+      fond.appendChild(img);
+    }
+  </script>
+</body>
+</html>

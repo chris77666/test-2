@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Connexion Admin - BarberShop Pro</title>
+  <link rel="stylesheet" href="admin.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+<body>
+  <div class="header-bar">
+    <div class="titre">
+      <h1>BarberShop Pro</h1>
+    </div>
+    <nav class="navigation">
+      <a href="index.html" class="nav-link">Accueil</a>
+      <a href="services.html" class="nav-link">Services</a>
+      <a href="reservation.html" class="nav-link">Réservation</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+      <a href="admin.html" class="nav-link active">Admin</a>
+    </nav>
+  </div>
+  <div class="rectangle-noir"></div>
+  <div class="login-fond">
+    <div class="login-form-container">
+      <div class="login-title">Espace Admin</div>
+      <form id="login-form" class="login-form" autocomplete="off">
+        <input type="text" name="username" placeholder="Identifiant" required>
+        <input type="password" name="password" placeholder="Mot de passe" required>
+        <button type="submit" class="login-btn">Connexion</button>
+        <div class="login-error" id="login-error"></div>
+      </form>
+    </div>
+  </div>
+  <script>
+    // Identifiants admin
+    const ADMIN_USER = "arberabdmin";
+    const ADMIN_PASS = "barber2025";
+
+    document.getElementById('login-form').onsubmit = function(e) {
+      e.preventDefault();
+      const username = e.target.username.value;
+      const password = e.target.password.value;
+     if(username === ADMIN_USER && password === ADMIN_PASS) {
+  localStorage.setItem('admin_logged_in', '1');
+  window.location.href = "espaceadmin.html";
+} else {
+  document.getElementById('login-error').textContent = "Identifiant ou mot de passe incorrect.";
+}
+    };
+  </script>
+</body>
+</html>

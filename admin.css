@@ -1,0 +1,192 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background-color: black;
+}
+
+.header-bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 50px 0 0; /* padding-top augmenté pour surélever le titre */
+}
+
+.titre {
+  color: rgb(255, 187, 0);
+  margin-left: 6cm;
+}
+
+.titre h1 {
+  font-size: 2.5em;
+  margin: 0;
+}
+
+nav.navigation {
+  display: flex;
+  gap: 20px;
+  padding: 0;
+  justify-content: flex-end;
+}
+
+/* ...le reste du CSS inchangé... */
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-size: 24px;
+  transition: color 0.3s;
+}
+
+.nav-link:active,
+.nav-link.active,
+.nav-link:hover {
+  color: rgb(255, 187, 0);
+  text-decoration: underline;
+}
+
+.hero-section {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.hero-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.7);
+  z-index: 1;
+}
+
+.hero-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: left;
+  color: white;
+  z-index: 2;
+  width: 600px;
+}
+
+.hero-content h2 {
+  font-size: 3.5em;
+  margin-bottom: 0.4em;
+}
+
+.hero-content .highlight {
+  color: rgb(255, 187, 0);
+  font-weight: bold;
+}
+
+.hero-content p {
+  font-size: 1.7em;
+  margin-bottom: 2em;
+}
+
+.btn-reserver {
+  display: inline-block;
+  background: rgb(255, 187, 0);
+  color: #222;
+  font-weight: bold;
+  font-size: 2em;
+  padding: 24px 60px;
+  border: none;
+  border-radius: 8px;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  margin-top: 10px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-reserver:hover {
+  background: #ffd700;
+  color: #000;
+}
+
+.rectangle-noir {
+  width: 20cm;
+  height: 0.5cm;
+  background: black;
+  margin: 20px auto; /* centre le rectangle horizontalement */
+  border-radius: 4px; /* optionnel, coins arrondis */
+}
+.login-fond {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(120deg, #232323 80%, #181818 100%);
+}
+.login-form-container {
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  padding: 38px 38px 28px 38px;
+  max-width: 420px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.login-title {
+  font-size: 2.1rem;
+  font-weight: 700;
+  margin-bottom: 0.2em;
+  text-align: center;
+  color: #ffbb00;
+}
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.login-form input {
+  padding: 12px 14px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #fafafa;
+  transition: border 0.2s;
+  outline: none;
+}
+.login-form input:focus {
+  border-color: #ffbb00;
+}
+.login-btn {
+  background: #f7f7f7;
+  color: #232323;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  padding: 13px 0;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+.login-btn:hover {
+  background: #ffbb00;
+  color: #111;
+  border-color: #ffbb00;
+}
+.login-error {
+  margin-top: 10px;
+  text-align: center;
+  min-height: 24px;
+  font-size: 1.08rem;
+  color: red;
+  font-weight: bold;
+}

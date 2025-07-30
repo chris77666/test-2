@@ -1,0 +1,308 @@
+<!-- espaceadmin.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Espace Admin - BarberShop Pro</title>
+  <link rel="stylesheet" href="espaceadmin.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script>
+    // Protection d'accès
+    if(localStorage.getItem('admin_logged_in') !== '1') {
+      window.location.href = "login.html";
+    }
+  </script>
+</head>
+<body>
+  <div class="header-bar">
+    <div class="titre">
+      <h1>BarberShop Pro</h1>
+    </div>
+    <nav class="navigation">
+      <a href="index.html" class="nav-link">Accueil</a>
+      <a href="services.html" class="nav-link">Services</a>
+      <a href="reservation.html" class="nav-link">Réservation</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+      <a href="espaceadmin.html" class="nav-link active">Admin</a>
+    </nav>
+  </div>
+  <div class="rectangle-noir"></div>
+  <div class="admin-dashboard">
+    <h2 class="admin-title">Planning <span class="highlight">Barbier</span></h2>
+    <p class="admin-desc">Gérez vos rendez-vous (2 sièges disponibles)</p>
+    <div class="stats-cards">
+      <div class="stat-card"><span id="stat-total">0</span><br>Total Rendez-vous</div>
+      <div class="stat-card"><span id="stat-confirmed">0</span><br>Confirmés</div>
+      <div class="stat-card"><span id="stat-done">0</span><br>Terminés</div>
+      <div class="stat-card"><span id="stat-cancelled">0</span><br>Annulés</div>
+    </div>
+    <div class="filter-bar">
+      <label for="filter-date">Trier par jour :</label>
+      <input type="date" id="filter-date">
+      <button id="clear-filter">Tout afficher</button>
+      <span id="notif" style="color:#ffbb00;font-weight:bold;margin-left:20px;"></span>
+    </div>
+    <div class="table-container">
+      <table id="reservations-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Heure</th>
+            <th>Client(s)</th>
+            <th>Service</th>
+            <th>Statut</th>
+            <th>Places</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Les réservations seront injectées ici par JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <button id="toggle-history" class="btn-reserver" style="margin-bottom:18px;">Afficher l'historique des commandes</button>
+    <button id="clear-history" class="btn-reserver" style="background:#c00;color:#fff;display:none;margin-bottom:18px;">Vider l'historique</button>
+    <div id="history-section" style="display:none;">
+      <div class="table-container">
+        <table id="history-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Heure</th>
+              <th>Client(s)</th>
+              <th>Service</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Historique injecté ici -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale de modification -->
+  <div id="edit-modal" class="modal-bg" style="display:none;">
+    <div class="modal-content">
+      <h3>Modifier la réservation</h3>
+      <form id="edit-form">
+        <label>Date : <input type="date" id="edit-date" required></label><br>
+        <label>Heure : <input type="time" id="edit-heure" required></label><br>
+        <div class="modal-actions">
+          <button type="submit" class="action-btn valider" style="color:#1a7f37;">Sauvegarder</button>
+          <button type="button" class="action-btn annuler" id="close-modal" style="color:#c00;">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Fonctions utilitaires
+    function getReservations() {
+      return JSON.parse(localStorage.getItem('reservations') || "[]");
+    }
+    function setReservations(res) {
+      localStorage.setItem('reservations', JSON.stringify(res));
+    }
+    function getHistory() {
+      return JSON.parse(localStorage.getItem('history') || "[]");
+    }
+    function setHistory(hist) {
+      localStorage.setItem('history', JSON.stringify(hist));
+    }
+
+    // Affichage des stats et du tableau
+    function updateDashboard() {
+      let reservations = getReservations();
+      let filterDate = document.getElementById('filter-date').value;
+      if (filterDate) {
+        reservations = reservations.filter(r => r.date === filterDate);
+      }
+      // Tri du plus proche au plus lointain
+      reservations.sort((a, b) => new Date(a.date + "T" + a.heure) - new Date(b.date + "T" + b.heure));
+      // Stats
+      const total = reservations.length;
+      const confirmed = reservations.filter(r => r.etat === "En attente" || r.etat === "Confirmé").length;
+      const done = reservations.filter(r => r.etat === "Terminé").length;
+      const cancelled = reservations.filter(r => r.etat === "Annulé").length;
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-confirmed').textContent = confirmed;
+      document.getElementById('stat-done').textContent = done;
+      document.getElementById('stat-cancelled').textContent = cancelled;
+
+      // Tableau des réservations
+      const tbody = document.querySelector('#reservations-table tbody');
+      tbody.innerHTML = "";
+      // Grouper par créneau (places)
+      let creneaux = {};
+      reservations.forEach(r => {
+        const key = r.date + "_" + r.heure;
+        if (!creneaux[key]) creneaux[key] = [];
+        creneaux[key].push(r);
+      });
+      Object.values(creneaux).forEach(group => {
+        group.forEach((r, idx) => {
+          const tr = document.createElement('tr');
+          if (idx === 0) {
+            tr.innerHTML = `
+              <td rowspan="${group.length}">${r.date}</td>
+              <td rowspan="${group.length}">${r.heure}</td>
+              <td>${r.prenom} ${r.nom}<br>
+                <span style="font-size:0.9em;color:#888;">${r.tel}</span><br>
+                <span style="font-size:0.9em;color:#888;">${r.email}</span>
+              </td>
+              <td>${r.service}</td>
+              <td><span class="statut ${r.etat.toLowerCase()}">${r.etat}</span></td>
+              <td rowspan="${group.length}"><span style="font-size:1.1em;">👥</span> ${group.length}/2</td>
+              <td>
+                <button class="action-btn terminer">Terminer</button>
+                <button class="action-btn annuler">Annuler</button>
+                <button class="action-btn modifier">Modifier</button>
+              </td>
+            `;
+          } else {
+            tr.innerHTML = `
+              <td>${r.prenom} ${r.nom}<br>
+                <span style="font-size:0.9em;color:#888;">${r.tel}</span><br>
+                <span style="font-size:0.9em;color:#888;">${r.email}</span>
+              </td>
+              <td>${r.service}</td>
+              <td><span class="statut ${r.etat.toLowerCase()}">${r.etat}</span></td>
+              <td>
+                <button class="action-btn terminer">Terminer</button>
+                <button class="action-btn annuler">Annuler</button>
+                <button class="action-btn modifier">Modifier</button>
+              </td>
+            `;
+          }
+          // Actions
+          tr.querySelector('.terminer').onclick = () => terminerReservation(r.id);
+          tr.querySelector('.annuler').onclick = () => annulerReservation(r.id);
+          tr.querySelector('.modifier').onclick = () => modifierReservation(r.id);
+          tbody.appendChild(tr);
+        });
+      });
+
+      // Historique
+      const hist = getHistory();
+      const histTbody = document.querySelector('#history-table tbody');
+      histTbody.innerHTML = "";
+      hist.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.date}</td>
+          <td>${r.heure}</td>
+          <td>
+            ${r.prenom} ${r.nom}<br>
+            <span style="font-size:0.95em;color:#888;">${r.tel}</span><br>
+            <span style="font-size:0.95em;color:#888;">${r.email}</span>
+          </td>
+          <td>${r.service}</td>
+          <td><span class="statut ${r.etat.toLowerCase()}">${r.etat}</span></td>
+        `;
+        histTbody.appendChild(tr);
+      });
+    }
+
+    function terminerReservation(id) {
+      let reservations = getReservations();
+      let idx = reservations.findIndex(r => r.id === id);
+      if (idx !== -1) {
+        let r = reservations[idx];
+        r.etat = "Terminé";
+        // Déplacer dans l'historique
+        let hist = getHistory();
+        hist.push(r);
+        setHistory(hist);
+        reservations.splice(idx, 1);
+        setReservations(reservations);
+        updateDashboard();
+      }
+    }
+    function annulerReservation(id) {
+      let reservations = getReservations();
+      let idx = reservations.findIndex(r => r.id === id);
+      if (idx !== -1) {
+        reservations[idx].etat = "Annulé";
+        setReservations(reservations);
+        updateDashboard();
+      }
+    }
+
+    // MODIFIER : Ouvre la modale
+    let editId = null;
+    function modifierReservation(id) {
+      let reservations = getReservations();
+      let r = reservations.find(res => res.id === id);
+      if (!r) return;
+      editId = id;
+      document.getElementById('edit-date').value = r.date;
+      document.getElementById('edit-heure').value = r.heure;
+      document.getElementById('edit-modal').style.display = "flex";
+    }
+
+    // Fermer la modale et sauvegarder
+    document.addEventListener('DOMContentLoaded', () => {
+      updateDashboard();
+      document.getElementById('filter-date').oninput = updateDashboard;
+      document.getElementById('clear-filter').onclick = () => {
+        document.getElementById('filter-date').value = "";
+        updateDashboard();
+      };
+      document.getElementById('close-modal').onclick = function() {
+        document.getElementById('edit-modal').style.display = "none";
+        editId = null;
+      };
+      document.getElementById('edit-form').onsubmit = function(e) {
+        e.preventDefault();
+        if(editId === null) return;
+        let reservations = getReservations();
+        let idx = reservations.findIndex(r => r.id === editId);
+        if (idx !== -1) {
+          reservations[idx].date = document.getElementById('edit-date').value;
+          reservations[idx].heure = document.getElementById('edit-heure').value;
+          setReservations(reservations);
+          updateDashboard();
+          document.getElementById('edit-modal').style.display = "none";
+          editId = null;
+        }
+      };
+
+      // Historique déroulant
+      const toggleBtn = document.getElementById('toggle-history');
+      const clearBtn = document.getElementById('clear-history');
+      const section = document.getElementById('history-section');
+      toggleBtn.onclick = function() {
+        if(section.style.display === "none") {
+          section.style.display = "block";
+          clearBtn.style.display = "inline-block";
+          toggleBtn.textContent = "Masquer l'historique des commandes";
+        } else {
+          section.style.display = "none";
+          clearBtn.style.display = "none";
+          toggleBtn.textContent = "Afficher l'historique des commandes";
+        }
+      };
+      clearBtn.onclick = function() {
+        if(confirm("Supprimer tout l'historique des commandes ?")) {
+          setHistory([]);
+          updateDashboard();
+        }
+      };
+    });
+
+    // Notification si nouvelle réservation
+    let lastCount = getReservations().length;
+    setInterval(() => {
+      const nowCount = getReservations().length;
+      if(nowCount > lastCount) {
+        document.getElementById('notif').textContent = "Nouvelle réservation reçue ! Veuillez rafraîchir la page.";
+      }
+      lastCount = nowCount;
+    }, 2000);
+  </script>
+</body>
+</html>

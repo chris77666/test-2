@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Réservation - BarberShop Pro</title>
+  <link rel="stylesheet" href="reservation.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+<body>
+  <div class="header-bar">
+    <div class="titre">
+      <h1>BarberShop Pro</h1>
+    </div>
+    <nav class="navigation">
+      <a href="index.html" class="nav-link">Accueil</a>
+      <a href="services.html" class="nav-link">Services</a>
+      <a href="reservation.html" class="nav-link active">Réservation</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+      <a href="admin.html" class="nav-link">Admin</a>
+    </nav>
+  </div>
+  <div class="rectangle-noir"></div>
+  <div class="reservation-fond">
+    <div class="fond-images"></div>
+    <div class="reservation-form-container">
+      <h2 class="reservation-title"><span class="highlight">Réservation</span> En Ligne</h2>
+      <p class="reservation-desc">Réservez votre créneau en quelques clics (max 2 clients par créneau)</p>
+      <form id="reservation-form" autocomplete="off">
+        <div class="form-row">
+          <input type="text" name="nom" placeholder="Nom *" required>
+          <input type="text" name="prenom" placeholder="Prénom *" required>
+        </div>
+        <input type="tel" name="tel" placeholder="Téléphone *" required pattern="^0[1-9]([-. ]?[0-9]{2}){4}$">
+        <input type="email" name="email" placeholder="Email *" required>
+        <select name="service" required>
+          <option value="">Choisir une formule</option>
+          <option value="Coupe Classique">Coupe Classique</option>
+          <option value="Coupe + Barbe">Coupe + Barbe</option>
+          <option value="Taille de Barbe">Taille de Barbe</option>
+          <option value="Coupe Premium">Coupe Premium</option>
+          <option value="Soin Capillaire">Soin Capillaire</option>
+          <option value="Coupe Enfant">Coupe Enfant</option>
+        </select>
+        <input type="date" name="date" id="date" required>
+        <select name="heure" id="heure" required>
+          <option value="">Choisir un horaire</option>
+        </select>
+        <button type="submit" class="btn-reserver">Confirmer la Réservation</button>
+        <div id="reservation-message"></div>
+      </form>
+    </div>
+  </div>
+  <script>
+    // Génère 300 images décoratives aléatoires
+    const images = [
+      "barbe.png",
+      "les-ciseaux.png",
+      "rasoir.png",
+      "taille-de-la-barbe.png"
+    ];
+    const fond = document.querySelector('.fond-images');
+    for(let i=0; i<300; i++) {
+      const img = document.createElement('img');
+      img.src = images[Math.floor(Math.random()*images.length)];
+      img.className = "fond-img";
+      img.style.top = Math.random()*95 + "%";
+      img.style.left = Math.random()*95 + "%";
+      img.style.width = (18 + Math.random()*22) + "px";
+      img.style.transform = `rotate(${Math.floor(Math.random()*360)}deg)`;
+      img.style.opacity = 0.10 + Math.random()*0.10;
+      fond.appendChild(img);
+    }
+
+    // Désactive les week-ends dans le calendrier
+    document.getElementById('date').addEventListener('input', function(e) {
+      const d = new Date(this.value);
+      if (d.getDay() === 0 || d.getDay() === 6) {
+        this.setCustomValidity("Les week-ends ne sont pas disponibles.");
+      } else {
+        this.setCustomValidity("");
+      }
+    });
+
+    // Génère les créneaux horaires
+    function getCreneaux() {
+      const creneaux = [];
+      // Matin 8h à 12h
+      for(let h=8; h<12; h++) {
+        creneaux.push(`${h.toString().padStart(2,'0')}:00`);
+        creneaux.push(`${h.toString().padStart(2,'0')}:30`);
+      }
+      // Après-midi 13h30 à 18h
+      for(let h=13; h<18; h++) {
+        if(h === 13) creneaux.push("13:30");
+        else {
+          creneaux.push(`${h.toString().padStart(2,'0')}:00`);
+          creneaux.push(`${h.toString().padStart(2,'0')}:30`);
+        }
+      }
+      return creneaux;
+    }
+    const heureSelect = document.getElementById('heure');
+    getCreneaux().forEach(h => {
+      const opt = document.createElement('option');
+      opt.value = h;
+      opt.textContent = h;
+      heureSelect.appendChild(opt);
+    });
+
+    // Gestion du formulaire de réservation (max 2 par créneau)
+    document.getElementById('reservation-form').onsubmit = function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        nom: form.nom.value,
+        prenom: form.prenom.value,
+        tel: form.tel.value,
+        email: form.email.value,
+        service: form.service.value,
+        date: form.date.value,
+        heure: form.heure.value,
+        etat: "En attente",
+        id: Date.now()
+      };
+      let reservations = JSON.parse(localStorage.getItem('reservations') || "[]");
+      // Vérifier le nombre de réservations pour ce créneau
+      const count = reservations.filter(r =>
+        r.date === data.date && r.heure === data.heure
+      ).length;
+      if (count >= 2) {
+        document.getElementById('reservation-message').innerHTML =
+          "<span style='color:red;font-weight:bold;'>Ce créneau est déjà complet (2 réservations max) !</span>";
+        return;
+      }
+      reservations.push(data);
+      reservations.sort((a, b) => new Date(b.date) - new Date(a.date));
+      localStorage.setItem('reservations', JSON.stringify(reservations));
+      document.getElementById('reservation-message').innerHTML =
+        `<span style="color:rgb(255,187,0);font-weight:bold;">
+          Merci pour votre réservation !<br>
+          Votre rendez-vous est confirmé pour le <u>${data.date}</u> à <u>${data.heure}</u>.<br>
+          Nous avons hâte de vous accueillir chez BarberShop Pro !
+        </span>`;
+      form.reset();
+    };
+  </script>
+</body>
+</html>
